@@ -42,13 +42,11 @@ import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel:ViewModel(){
-    private val _navBottomState= MutableStateFlow(true)
-    val navBottomState=_navBottomState
+    private val _navBottomState = MutableStateFlow(true)
+    val navBottomState: StateFlow<Boolean> = _navBottomState
 
     fun changeBottomState(state:Boolean){
-        _navBottomState.apply {
-            value=state
-        }
+         _navBottomState.value = state
     }
 }
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -66,7 +64,6 @@ fun MainNavView() {
     }
     val mainNavController = rememberNavController()
     mainNavController.addOnDestinationChangedListener { _, destination, _ ->
-        MainNavRoute.apply {
             when (destination.route) {
                 HOME -> {
                     nowActiveIndex = 0
@@ -80,8 +77,6 @@ fun MainNavView() {
                     nowActiveIndex = 2
                 }
             }
-        }
-
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
