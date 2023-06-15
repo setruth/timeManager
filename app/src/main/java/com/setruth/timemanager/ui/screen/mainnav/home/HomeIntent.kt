@@ -29,13 +29,13 @@ sealed class UIIntent {
 class HomeViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-    private val WeekList = listOf<String>("一", "二", "三", "四", "五", "六", "七")
-    private var _dateState = MutableStateFlow(DateState())
-    val dateState = _dateState
-    private var _timeState = MutableStateFlow(TimeState())
-    val timeState = _timeState
-    private var _uiState = MutableStateFlow(UIState())
-    val uiState = _uiState
+    private val WeekList = listOf("一", "二", "三", "四", "五", "六", "七")
+    private val _dateState = MutableStateFlow(DateState())
+    val dateState: StateFlow<DateState> = _dateState
+    private val _timeState = MutableStateFlow(TimeState())
+    val timeState: StateFlow<TimeState> = _timeState
+    private val _uiState = MutableStateFlow(UIState())
+    val uiState: StateFlow<UIState> = _uiState
 
     init {
         initTime()
@@ -45,66 +45,45 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun initImmersionState() = withContext(Dispatchers.IO) {
-        dataStore.data.map {
+        val show = dataStore.data.map {
             it[DataStoreCont.IMMERSION_STATE] ?: false
-        }.first().takeIf { it }?.let {
-            _uiState.apply {
-                value = value.copy(immersionShow = true)
-            }
-        } ?: let {
-            _uiState.apply {
-                value = value.copy(immersionShow = false)
-            }
+        }.first()
+        if (show) {
+            _uiState.value = _uiState.value.copy(immersionShow = true)
+        } else {
+            _uiState.value = _uiState.value.copy(immersionShow = false)
         }
     }
 
     fun sendUIIntent(uiIntent: UIIntent) {
         when (uiIntent) {
-            is UIIntent.ChangeImmersionState -> _uiState.apply {
-                value = value.copy(immersionShow = uiIntent.value)
+            is UIIntent.ChangeImmersionState -> {
+                _uiState.value = _uiState.value.copy(immersionShow = uiIntent.value)
                 viewModelScope.launch(Dispatchers.IO) {
                     dataStore.edit {
                         it[DataStoreCont.IMMERSION_STATE] = uiIntent.value
                     }
                 }
             }
-
-            is UIIntent.ChangeLoadingState -> uiState.apply {
-                value = value.copy(loadingShow = uiIntent.value)
-            }
-
-            is UIIntent.ChangeTimeMaxState -> uiState.apply {
-                value = value.copy(timeMax = uiIntent.value)
-            }
+            is UIIntent.ChangeLoadingState -> _uiState.value = _uiState.value.copy(loadingShow = uiIntent.value)
+            is UIIntent.ChangeTimeMaxState -> _uiState.value = _uiState.value.copy(timeMax = uiIntent.value)
         }
     }
 
     private fun initTime() {
-        LocalDateTime.now().apply {
-            _timeState.also { timeState ->
-                timeState.value =
-                    timeState.value.copy(hour = hour, minute = minute, second = second)
-            }
-            _uiState.also { uiState ->
-                uiState.value =
-                    uiState.value.copy(timeMode = if (hour > 12) TimeMode.PM else TimeMode.AM)
-            }
+        val now = LocalDateTime.now()
+        _timeState.value = _timeState.value.copy(hour = now.hour, minute = now.minute, second = now.second)
+        _uiState.value = _uiState.value.copy(timeMode = if (now.hour > 12) TimeMode.PM else TimeMode.AM)
 
-        }
         updateTime()
-        updateDateAndWeek()
+        updateDateAndWeek(now)
     }
 
-    private fun updateDateAndWeek() {
-        LocalDateTime.now().apply {
-            _dateState.also { dateState ->
-                dateState.value =
-                    dateState.value.copy(
-                        date = "$year/$monthValue/$dayOfMonth",
-                        week = "(${WeekList[dayOfWeek.value - 1]})"
-                    )
-            }
-        }
+    private fun updateDateAndWeek(now: LocalDateTime) {
+            _dateState.value = _dateState.value.copy(
+            date = "${now.year}/${now.monthValue}/${now.dayOfMonth}",
+            week = "(${weekList[now.dayOfWeek.value - 1]})"
+        )
     }
 
     private fun updateTime() {
@@ -126,7 +105,7 @@ class HomeViewModel @Inject constructor(
                             Log.e("TAG", "updateTime:$timeMode ")
                             _uiState.value = _uiState.value.copy(timeMode = timeMode)
                             value = if (nowHour == 24) {
-                                updateDateAndWeek()
+                                updateDateAndWeek(LocalDateTime.now())
                                 value.copy(hour = 0)
                             } else {
                                 value.copy(hour = nowHour)
