@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import com.setruth.timemanager.config.APPRoute
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +78,10 @@ fun StartPageView(appNavController: NavHostController? = null) {
            contentVisible = true
        }
         delay(1500)
-        appNavController?.navigate(APPRoute.MAIN_NAV)
+        appNavController!!.navigate(
+            APPRoute.MAIN_NAV,
+            NavOptions.Builder().setPopUpTo(APPRoute.START_SCREEN, true).build()
+        )
     }
     Column(
         modifier = Modifier
@@ -111,7 +115,6 @@ fun StartPageView(appNavController: NavHostController? = null) {
                         alpha = lineAlpha
                     )
                 }
-
             }
         }
 

@@ -36,10 +36,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.setruth.timemanager.R
 import com.setruth.timemanager.config.MainNavRoute
+import com.setruth.timemanager.config.MainNavRoute.COUNT_DOWN
+import com.setruth.timemanager.config.MainNavRoute.HOME
+import com.setruth.timemanager.config.MainNavRoute.STOP_WATCH
 import com.setruth.timemanager.ui.screen.mainnav.countdown.CountDownView
 import com.setruth.timemanager.ui.screen.mainnav.home.HomeView
 import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel:ViewModel(){
     private val _navBottomState = MutableStateFlow(true)
@@ -91,17 +95,17 @@ fun MainNavView() {
                             onClick = {
                                 nowActiveIndex = when (index) {
                                     0 -> {
-                                        mainNavController.mainNavTo(MainNavRoute.HOME)
+                                        mainNavController.mainNavTo(HOME)
                                         index
                                     }
 
                                     1 -> {
-                                        mainNavController.mainNavTo(MainNavRoute.COUNT_DOWN)
+                                        mainNavController.mainNavTo(COUNT_DOWN)
                                         index
                                     }
 
                                     2 -> {
-                                        mainNavController.mainNavTo(MainNavRoute.STOP_WATCH)
+                                        mainNavController.mainNavTo(STOP_WATCH)
                                         index
                                     }
 
@@ -130,14 +134,14 @@ fun MainNavView() {
             }
         }) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = mainNavController, startDestination = MainNavRoute.HOME) {
-                composable(MainNavRoute.HOME) {
+            NavHost(navController = mainNavController, startDestination = HOME) {
+                composable(HOME) {
                     HomeView(mainViewModel)
                 }
-                composable(MainNavRoute.COUNT_DOWN) {
+                composable(COUNT_DOWN) {
                     CountDownView()
                 }
-                composable(MainNavRoute.STOP_WATCH) {
+                composable(STOP_WATCH) {
                     StopWatchView()
                 }
             }

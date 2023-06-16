@@ -33,6 +33,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,12 +83,11 @@ fun HomeView(mainViewModel: MainViewModel) {
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-
                 ) {
                 AnimatedVisibility(
-                    visible = !uiState.immersionShow,
-                    enter = scaleIn() + fadeIn(),
-                    exit = scaleOut() + fadeOut()
+                    visible = !uiState.timeMax,
+                    enter = scaleIn(),
+                    exit = scaleOut()
                 ) {
                     Row {
                         val pmActive = when (uiState.timeMode) {
@@ -152,9 +153,9 @@ fun HomeView(mainViewModel: MainViewModel) {
                         TimeTag(timeHour) {
                             homeViewModel.sendUIIntent(UIIntent.ChangeTimeMaxState(!uiState.timeMax))
                         }
-                        Text(text = ":",fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
                         TimeTag(timeState.minute)
-                        Text(text = ":",fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
                         TimeTag(timeState.second)
                     }
                 }
@@ -175,6 +176,7 @@ fun TimeTag(content: Int, click: () -> Unit = {}) {
         ),
         modifier = Modifier
             .padding(horizontal = 5.dp)
+            .clip(RoundedCornerShape(10.dp))
             .clickable {
                 click()
             }
