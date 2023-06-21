@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,10 +34,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +55,7 @@ fun HomeView(mainViewModel: MainViewModel) {
     val uiState by homeViewModel.uiState.collectAsState()
     val dateState by homeViewModel.dateState.collectAsState()
     val activity = LocalContext.current as Activity
+
     LaunchedEffect(uiState.immersionShow) {
         homeViewModel.sendUIIntent(UIIntent.ChangeLoadingState(true))
         if (uiState.immersionShow) {
@@ -62,19 +63,24 @@ fun HomeView(mainViewModel: MainViewModel) {
         } else {
             mainViewModel.changeBottomState(true)
         }
+
         delay(500)
+
         if (uiState.immersionShow) {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
+
         homeViewModel.sendUIIntent(UIIntent.ChangeLoadingState(false))
     }
+
     val timeHour = if (!uiState.timeMax) {
         if (timeState.hour > 12) timeState.hour - 12 else timeState.hour
     } else {
         timeState.hour
     }
+
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier
@@ -83,6 +89,7 @@ fun HomeView(mainViewModel: MainViewModel) {
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
+
                 ) {
                 AnimatedVisibility(
                     visible = !uiState.timeMax,
@@ -149,14 +156,13 @@ fun HomeView(mainViewModel: MainViewModel) {
                         )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        TimeTag(timeHour) {
+                        TimeTag(modifier = Modifier, timeHour) {
                             homeViewModel.sendUIIntent(UIIntent.ChangeTimeMaxState(!uiState.timeMax))
                         }
                         Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        TimeTag(timeState.minute)
+                        TimeTag(content = timeState.minute)
                         Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        TimeTag(timeState.second)
+                        TimeTag(content = timeState.second)
                     }
                 }
             }
@@ -169,14 +175,13 @@ fun HomeView(mainViewModel: MainViewModel) {
 
 
 @Composable
-fun TimeTag(content: Int, click: () -> Unit = {}) {
+fun TimeTag(modifier: Modifier = Modifier, content: Int, click: () -> Unit = {}) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 5.dp)
-            .clip(RoundedCornerShape(10.dp))
             .clickable {
                 click()
             }
@@ -184,7 +189,10 @@ fun TimeTag(content: Int, click: () -> Unit = {}) {
         Text(
             text = content.toString(),
             fontSize = 30.sp,
-            modifier = Modifier.padding(vertical = 10.dp, horizontal = 12.dp)
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .size(60.dp, 60.dp)
+                .padding(vertical = 10.dp, horizontal = 12.dp)
         )
     }
 }

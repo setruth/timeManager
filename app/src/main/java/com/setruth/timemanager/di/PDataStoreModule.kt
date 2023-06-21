@@ -21,4 +21,4 @@ object PDataStoreModule {
         context.dataStore
 }
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DataStoreCont.DATA_STORE_NAME)
+val Context.dataStore by preferencesDataStore(name = DataStoreCont.DATA_STORE_NAME)

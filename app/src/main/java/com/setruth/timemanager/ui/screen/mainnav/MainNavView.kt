@@ -35,7 +35,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.setruth.timemanager.R
-import com.setruth.timemanager.config.MainNavRoute
 import com.setruth.timemanager.config.MainNavRoute.COUNT_DOWN
 import com.setruth.timemanager.config.MainNavRoute.HOME
 import com.setruth.timemanager.config.MainNavRoute.STOP_WATCH
@@ -45,48 +44,54 @@ import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MainViewModel:ViewModel(){
+class MainViewModel : ViewModel() {
     private val _navBottomState = MutableStateFlow(true)
     val navBottomState: StateFlow<Boolean> = _navBottomState
 
-    fun changeBottomState(state:Boolean){
-         _navBottomState.value = state
+    fun changeBottomState(state: Boolean) {
+        _navBottomState.value = state
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainNavView() {
-    val mainViewModel:MainViewModel= viewModel()
+
+    val mainViewModel: MainViewModel = viewModel()
     val navBottomState by mainViewModel.navBottomState.collectAsState()
     val navList = listOf(
-        Pair("主页", R.drawable.home),
-        Pair("倒计时", R.drawable.count),
-        Pair("秒表", R.drawable.second)
+        "主页" to R.drawable.home,
+        "倒计时" to R.drawable.count,
+        "秒表" to R.drawable.second,
     )
+
     var nowActiveIndex by remember {
         mutableStateOf(0)
     }
+
     val mainNavController = rememberNavController()
+
     mainNavController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.route) {
-                HOME -> {
-                    nowActiveIndex = 0
-                }
-
-                COUNT_DOWN -> {
-                    nowActiveIndex = 1
-                }
-
-                STOP_WATCH -> {
-                    nowActiveIndex = 2
-                }
+        when (destination.route) {
+            HOME -> {
+                nowActiveIndex = 0
             }
+
+            COUNT_DOWN -> {
+                nowActiveIndex = 1
+            }
+
+            STOP_WATCH -> {
+                nowActiveIndex = 2
+            }
+        }
     }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                visible = navBottomState, enter = scaleIn()+ fadeIn(), exit = scaleOut()+ fadeOut()
+                visible = navBottomState, enter = scaleIn() + fadeIn(), exit = scaleOut() + fadeOut()
             ) {
                 NavigationBar {
                     navList.forEachIndexed { index, pair ->

@@ -43,27 +43,36 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StartPageView(appNavController: NavHostController? = null) {
+
     var lineAlpha by remember {
         mutableStateOf(0f)
     }
+
     val animatable = remember {
         Animatable(0f)
     }
+
     val circleColor = MaterialTheme.colorScheme.primaryContainer
     val lineColor = MaterialTheme.colorScheme.onPrimaryContainer
+
     var contentVisible by remember {
         mutableStateOf(false)
     }
+
     var showLine by remember {
         mutableStateOf(false)
     }
+
     var iconVisible by remember {
         mutableStateOf(false)
     }
-    val canvasRotation by animateFloatAsState(targetValue = if (lineAlpha == 1f) 360f else 0f,
+
+    val canvasRotation by animateFloatAsState(
+        targetValue = if (lineAlpha == 1f) 360f else 0f,
         animationSpec = tween(durationMillis = 1000),
         label = ""
     )
+
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             delay(500)
@@ -74,9 +83,7 @@ fun StartPageView(appNavController: NavHostController? = null) {
                 targetValue = 1f, animationSpec = tween(durationMillis = 500, easing = LinearEasing)
             )
         }
-        withContext(Dispatchers.IO) {
-           contentVisible = true
-       }
+        contentVisible = true
         delay(1500)
         appNavController!!.navigate(
             APPRoute.MAIN_NAV,
@@ -130,7 +137,6 @@ fun StartPageView(appNavController: NavHostController? = null) {
                 modifier = Modifier.padding(15.dp)
             )
         }
-
     }
 }
 
