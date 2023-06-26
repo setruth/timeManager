@@ -66,11 +66,7 @@ fun HomeView(mainViewModel: MainViewModel) {
 
         delay(500)
 
-        if (uiState.immersionShow) {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
+        setScreenOrientation(uiState, activity)
 
         homeViewModel.sendUIIntent(UIIntent.ChangeLoadingState(false))
     }
@@ -87,44 +83,13 @@ fun HomeView(mainViewModel: MainViewModel) {
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-
-                ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 AnimatedVisibility(
                     visible = !uiState.timeMax,
                     enter = scaleIn(),
                     exit = scaleOut()
                 ) {
-                    Row {
-                        val pmActive = when (uiState.timeMode) {
-                            TimeMode.PM -> true
-                            TimeMode.AM -> false
-                        }
-                        OutlinedButton(
-                            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-                                containerColor = if (pmActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
-                            ), shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
-                        ) {
-                            Text(
-                                text = "PM",
-                                color = if (pmActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                        OutlinedButton(
-                            onClick = { /*TODO*/ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (!pmActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
-                            ),
-                            shape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp)
-                        ) {
-                            Text(
-                                text = "AM",
-                                color = if (!pmActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-
-                    }
+                    PMAndAMButton(uiState)
                 }
 
                 Spacer(
@@ -155,21 +120,71 @@ fun HomeView(mainViewModel: MainViewModel) {
                             modifier = Modifier.padding(bottom = 15.dp, start = 5.dp)
                         )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TimeTag(modifier = Modifier, timeHour) {
-                            homeViewModel.sendUIIntent(UIIntent.ChangeTimeMaxState(!uiState.timeMax))
-                        }
-                        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        TimeTag(content = timeState.minute)
-                        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        TimeTag(content = timeState.second)
-                    }
+                    ShowTime(timeHour, homeViewModel, uiState, timeState)
                 }
             }
         }
         if (uiState.loadingShow) {
             LoadingProgress()
         }
+    }
+}
+
+@Composable
+private fun ShowTime(
+    timeHour: Int,
+    homeViewModel: HomeViewModel,
+    uiState: UIState,
+    timeState: TimeState
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TimeTag(modifier = Modifier, timeHour) {
+            homeViewModel.sendUIIntent(UIIntent.ChangeTimeMaxState(!uiState.timeMax))
+        }
+        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        TimeTag(content = timeState.minute)
+        Text(text = ":", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        TimeTag(content = timeState.second)
+    }
+}
+
+@Composable
+private fun PMAndAMButton(uiState: UIState) {
+    val pmActive = when (uiState.timeMode) {
+        TimeMode.PM -> true
+        TimeMode.AM -> false
+    }
+    Row {
+        OutlinedButton(
+            onClick = { }, colors = ButtonDefaults.buttonColors(
+                containerColor = if (pmActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+            ), shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
+        ) {
+            Text(
+                text = "PM",
+                color = if (pmActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        OutlinedButton(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (pmActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+            ),
+            shape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp)
+        ) {
+            Text(
+                text = "AM",
+                color = if (pmActive) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
+}
+
+private fun setScreenOrientation(uiState: UIState, activity: Activity) {
+    if (uiState.immersionShow) {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    } else {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 }
 
