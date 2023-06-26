@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
+import androidx.navigation.compose.rememberNavController
 import com.setruth.timemanager.config.APPRoute
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun StartPageView(appNavController: NavHostController? = null) {
+fun StartPageView(appNavController: NavHostController = rememberNavController()) {
 
     var lineAlpha by remember {
         mutableStateOf(0f)
@@ -85,7 +86,7 @@ fun StartPageView(appNavController: NavHostController? = null) {
         }
         contentVisible = true
         delay(1500)
-        appNavController!!.navigate(
+        appNavController.navigate(
             APPRoute.MAIN_NAV,
             NavOptions.Builder().setPopUpTo(APPRoute.START_SCREEN, true).build()
         )

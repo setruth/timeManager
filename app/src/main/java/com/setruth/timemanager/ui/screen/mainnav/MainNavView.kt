@@ -1,5 +1,7 @@
 package com.setruth.timemanager.ui.screen.mainnav
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -21,23 +23,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.setruth.timemanager.R
-import com.setruth.timemanager.config.MainNavRoute.COUNT_DOWN
-import com.setruth.timemanager.config.MainNavRoute.HOME
-import com.setruth.timemanager.config.MainNavRoute.STOP_WATCH
 import com.setruth.timemanager.ui.screen.mainnav.countdown.CountDownView
 import com.setruth.timemanager.ui.screen.mainnav.home.HomeView
 import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
@@ -59,33 +56,8 @@ fun MainNavView() {
 
     val mainViewModel: MainViewModel = viewModel()
     val navBottomState by mainViewModel.navBottomState.collectAsState()
-    val navList = listOf(
-        "主页" to R.drawable.home,
-        "倒计时" to R.drawable.count,
-        "秒表" to R.drawable.second,
-    )
 
-    var nowActiveIndex by remember {
-        mutableStateOf(0)
-    }
-
-    val mainNavController = rememberNavController()
-
-    mainNavController.addOnDestinationChangedListener { _, destination, _ ->
-        when (destination.route) {
-            HOME -> {
-                nowActiveIndex = 0
-            }
-
-            COUNT_DOWN -> {
-                nowActiveIndex = 1
-            }
-
-            STOP_WATCH -> {
-                nowActiveIndex = 2
-            }
-        }
-    }
+    val navController = rememberNavController()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -94,41 +66,22 @@ fun MainNavView() {
                 visible = navBottomState, enter = scaleIn() + fadeIn(), exit = scaleOut() + fadeOut()
             ) {
                 NavigationBar {
-                    navList.forEachIndexed { index, pair ->
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
+                    items.forEach { screen ->
                         NavigationBarItem(
-                            selected = nowActiveIndex == index,
-                            onClick = {
-                                nowActiveIndex = when (index) {
-                                    0 -> {
-                                        mainNavController.mainNavTo(HOME)
-                                        index
-                                    }
-
-                                    1 -> {
-                                        mainNavController.mainNavTo(COUNT_DOWN)
-                                        index
-                                    }
-
-                                    2 -> {
-                                        mainNavController.mainNavTo(STOP_WATCH)
-                                        index
-                                    }
-
-                                    else -> {
-                                        -1
-                                    }
-                                }
-                            },
+                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                            onClick = { navController.navigate(screen.route) },
                             icon = {
                                 Icon(
                                     modifier = Modifier.size(25.dp),
-                                    painter = painterResource(id = pair.second),
-                                    contentDescription = pair.first,
+                                    painter = painterResource(id = screen.icon),
+                                    contentDescription = stringResource(id = screen.resourceId),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             },
                             label = {
-                                Text(text = pair.first)
+                                Text(text = stringResource(id = screen.resourceId))
                             },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -139,24 +92,19 @@ fun MainNavView() {
             }
         }) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = mainNavController, startDestination = HOME) {
-                composable(HOME) {
-                    HomeView(mainViewModel)
-                }
-                composable(COUNT_DOWN) {
-                    CountDownView()
-                }
-                composable(STOP_WATCH) {
-                    StopWatchView()
-                }
+            NavHost(navController = navController, startDestination = Screen.Home.route) {
+                composable(Screen.Home.route) { HomeView(mainViewModel) }
+                composable(Screen.CountDown.route) { CountDownView() }
+                composable(Screen.StopWatch.route) { StopWatchView() }
             }
         }
     }
 }
 
-fun NavHostController.mainNavTo(route: String) {
-    this.navigate(route) {
-        popUpTo(this@mainNavTo.graph.findStartDestination().id)
-        launchSingleTop = true
-    }
+val items = listOf(Screen.Home, Screen.CountDown, Screen.StopWatch)
+
+sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
+    object Home : Screen("home", R.string.home, R.drawable.home)
+    object CountDown : Screen("countDown", R.string.count_down, R.drawable.count)
+    object StopWatch : Screen("stopWatch", R.string.stop_watch, R.drawable.second)
 }
