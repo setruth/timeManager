@@ -18,12 +18,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TimeManagerTheme {
-                val appNavController= rememberNavController()
-                NavHost(navController = appNavController, startDestination =APPRoute.START_SCREEN ){
-                    composable(APPRoute.START_SCREEN){
+                val appNavController = rememberNavController()
+                NavHost(navController = appNavController, startDestination = APPRoute.START_SCREEN) {
+                    composable(APPRoute.START_SCREEN) {
                         StartPageView(appNavController)
                     }
-                    composable(APPRoute.MAIN_NAV){
+                    composable(APPRoute.MAIN_NAV) {
                         MainNavView()
                     }
                 }

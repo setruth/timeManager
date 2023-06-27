@@ -19,7 +19,7 @@ import com.setruth.timemanager.ui.theme.TimeManagerTheme
 
 @Composable
 fun LoadingProgress(
-     title:String="加载中"
+    title: String = "加载中"
 ) {
     Column(
         modifier = Modifier

@@ -6,5 +6,5 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun StopWatchView() {
-    Text(text = "表秒")
+    Text(text = "秒表")
 }
