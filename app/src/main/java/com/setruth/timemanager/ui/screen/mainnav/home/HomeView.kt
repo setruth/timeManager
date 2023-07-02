@@ -49,8 +49,11 @@ import kotlinx.coroutines.delay
 @SuppressLint("SourceLockedOrientationActivity")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun HomeView(mainViewModel: MainViewModel) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
+fun HomeView(
+    mainViewModel: MainViewModel,
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
     val timeState by homeViewModel.timeState.collectAsState()
     val uiState by homeViewModel.uiState.collectAsState()
     val dateState by homeViewModel.dateState.collectAsState()
@@ -99,11 +102,15 @@ fun HomeView(mainViewModel: MainViewModel) {
                 )
                 Switch(
                     checked = uiState.immersionShow,
-                    onCheckedChange = { homeViewModel.sendUIIntent(UIIntent.ChangeImmersionState(!uiState.immersionShow)) }
+                    onCheckedChange = {
+                        homeViewModel.sendUIIntent(
+                            UIIntent.ChangeImmersionState(!uiState.immersionShow)
+                        )
+                    }
                 )
             }
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .weight(1f),
                 verticalArrangement = Arrangement.Center,
@@ -156,25 +163,35 @@ private fun PMAndAMButton(uiState: UIState) {
     }
     Row {
         OutlinedButton(
-            onClick = { }, colors = ButtonDefaults.buttonColors(
-                containerColor = if (pmActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
-            ), shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (pmActive) {
+                    MaterialTheme.colorScheme.primary
+                } else MaterialTheme.colorScheme.primaryContainer
+            ),
+            shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
         ) {
             Text(
                 text = "PM",
-                color = if (pmActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+                color = if (pmActive) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         OutlinedButton(
             onClick = { },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (pmActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+                containerColor = if (pmActive) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else MaterialTheme.colorScheme.primary
             ),
             shape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp)
         ) {
             Text(
                 text = "AM",
-                color = if (pmActive) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+                color = if (pmActive) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else MaterialTheme.colorScheme.onPrimary
             )
         }
     }
@@ -188,9 +205,8 @@ private fun setScreenOrientation(uiState: UIState, activity: Activity) {
     }
 }
 
-
 @Composable
-fun TimeTag(modifier: Modifier = Modifier, content: Int, click: () -> Unit = {}) {
+fun TimeTag(modifier: Modifier = Modifier, content: Int = 0, click: () -> Unit = {}) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer

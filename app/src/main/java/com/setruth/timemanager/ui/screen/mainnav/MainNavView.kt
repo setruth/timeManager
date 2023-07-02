@@ -38,6 +38,7 @@ import com.setruth.timemanager.R
 import com.setruth.timemanager.ui.screen.mainnav.countdown.CountDownView
 import com.setruth.timemanager.ui.screen.mainnav.home.HomeView
 import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -52,18 +53,18 @@ class MainViewModel : ViewModel() {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun MainNavView() {
-
-    val mainViewModel: MainViewModel = viewModel()
+fun MainNavView(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel()) {
     val navBottomState by mainViewModel.navBottomState.collectAsState()
 
     val navController = rememberNavController()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         bottomBar = {
             AnimatedVisibility(
-                visible = navBottomState, enter = scaleIn() + fadeIn(), exit = scaleOut() + fadeOut()
+                visible = navBottomState,
+                enter = scaleIn() + fadeIn(),
+                exit = scaleOut() + fadeOut()
             ) {
                 NavigationBar {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -90,7 +91,8 @@ fun MainNavView() {
                     }
                 }
             }
-        }) {
+        }
+    ) {
         Box(modifier = Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = Screen.Home.route) {
                 composable(Screen.Home.route) { HomeView(mainViewModel) }
@@ -101,7 +103,7 @@ fun MainNavView() {
     }
 }
 
-val items = listOf(Screen.Home, Screen.CountDown, Screen.StopWatch)
+val items = persistentListOf(Screen.Home, Screen.CountDown, Screen.StopWatch)
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
     object Home : Screen("home", R.string.home, R.drawable.home)

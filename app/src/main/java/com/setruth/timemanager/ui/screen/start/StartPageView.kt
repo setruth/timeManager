@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
-import com.setruth.timemanager.config.APPRoute
+import com.setruth.timemanager.config.Route
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -43,8 +43,10 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun StartPageView(appNavController: NavHostController = rememberNavController()) {
-
+fun StartPageView(
+    modifier: Modifier = Modifier,
+    appNavController: NavHostController = rememberNavController()
+) {
     var lineAlpha by remember {
         mutableStateOf(0f)
     }
@@ -81,18 +83,19 @@ fun StartPageView(appNavController: NavHostController = rememberNavController())
             delay(500)
             showLine = true
             animatable.animateTo(
-                targetValue = 1f, animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 500, easing = LinearEasing)
             )
         }
         contentVisible = true
         delay(1500)
         appNavController.navigate(
-            APPRoute.MAIN_NAV,
-            NavOptions.Builder().setPopUpTo(APPRoute.START_SCREEN, true).build()
+            Route.MAIN_NAV,
+            NavOptions.Builder().setPopUpTo(Route.START_SCREEN, true).build()
         )
     }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(
                 MaterialTheme.colorScheme.background
@@ -101,7 +104,8 @@ fun StartPageView(appNavController: NavHostController = rememberNavController())
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AnimatedVisibility(
-            visible = iconVisible, enter = scaleIn()
+            visible = iconVisible,
+            enter = scaleIn()
         ) {
             Canvas(
                 modifier = Modifier
@@ -110,7 +114,9 @@ fun StartPageView(appNavController: NavHostController = rememberNavController())
             ) {
                 val centerOffset = Offset(size.width / 2, size.height / 2)
                 drawCircle(
-                    color = circleColor, radius = size.minDimension / 2, center = centerOffset
+                    color = circleColor,
+                    radius = size.minDimension / 2,
+                    center = centerOffset
                 )
                 if (showLine) {
                     lineAlpha = animatable.value
@@ -148,4 +154,3 @@ fun StartPagePreview() {
         StartPageView()
     }
 }
-

@@ -1,6 +1,5 @@
 package com.setruth.timemanager.ui.screen.mainnav.home
 
-
 data class DateState(
     val date: String = "",
     val week: String = ""

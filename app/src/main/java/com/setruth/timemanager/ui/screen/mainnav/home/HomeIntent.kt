@@ -24,7 +24,6 @@ import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-
 sealed class UIIntent {
     data class ChangeImmersionState(val value: Boolean) : UIIntent()
     data class ChangeLoadingState(val value: Boolean) : UIIntent()
@@ -89,7 +88,9 @@ class HomeViewModel @Inject constructor(
     private fun initTime() {
         val now = LocalDateTime.now()
         _timeState.value = _timeState.value.copy(
-            hour = now.hour, minute = now.minute, second = now.second
+            hour = now.hour,
+            minute = now.minute,
+            second = now.second
         )
         _uiState.value = _uiState.value.copy(
             timeMode = if (now.hour > 12) TimeMode.PM else TimeMode.AM
@@ -116,9 +117,7 @@ class HomeViewModel @Inject constructor(
                 _timeState.value = TimeState(it.hour, it.minute, it.second)
             }
             .launchIn(viewModelScope)
-
     }
-
 
     private fun tickerFlow(period: Duration, initialDelay: Duration = Duration.ZERO) = flow {
         delay(initialDelay)
