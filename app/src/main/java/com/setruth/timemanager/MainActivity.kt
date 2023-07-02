@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.setruth.timemanager.config.APPRoute
+import com.setruth.timemanager.config.Route
 import com.setruth.timemanager.ui.screen.mainnav.MainNavView
 import com.setruth.timemanager.ui.screen.start.StartPageView
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
@@ -19,11 +19,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             TimeManagerTheme {
                 val appNavController = rememberNavController()
-                NavHost(navController = appNavController, startDestination = APPRoute.START_SCREEN) {
-                    composable(APPRoute.START_SCREEN) {
-                        StartPageView(appNavController)
+                NavHost(navController = appNavController, startDestination = Route.START_SCREEN) {
+                    composable(Route.START_SCREEN) {
+                        StartPageView(appNavController = appNavController)
                     }
-                    composable(APPRoute.MAIN_NAV) {
+                    composable(Route.MAIN_NAV) {
                         MainNavView()
                     }
                 }

@@ -1,4 +1,4 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -22,7 +22,7 @@ android {
             useSupportLibrary = true
         }
     }
-
+    @Suppress("UnstableApiUsage")
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -39,6 +39,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    @Suppress("UnstableApiUsage")
     buildFeatures {
         compose = true
     }
@@ -49,6 +50,11 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    lint {
+        quiet = true
+        abortOnError = false
+        ignoreWarnings = false
     }
 }
 
@@ -61,12 +67,15 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha03")
     // navigation
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.navigation:navigation-compose:2.6.0")
     // viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     // datetime
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    // logging
+    implementation("io.github.oshai:kotlin-logging-jvm:4.0.0")
 
+    lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -86,4 +95,11 @@ dependencies {
 }
 kapt {
     correctErrorTypes = true
+}
+kotlin {
+    sourceSets {
+        dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+        }
+    }
 }
