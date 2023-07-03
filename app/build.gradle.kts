@@ -77,6 +77,8 @@ dependencies {
 
     lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
 
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
