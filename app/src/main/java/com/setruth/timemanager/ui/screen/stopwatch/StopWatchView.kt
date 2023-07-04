@@ -1,4 +1,4 @@
-package com.setruth.timemanager.ui.screen.mainnav.stopwatch
+package com.setruth.timemanager.ui.screen.stopwatch
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

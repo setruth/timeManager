@@ -1,4 +1,4 @@
-package com.setruth.timemanager.ui.screen.mainnav.home
+package com.setruth.timemanager.ui.screen.home
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -18,17 +18,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-sealed class UIIntent {
-    data class ChangeImmersionState(val value: Boolean) : UIIntent()
-    data class ChangeLoadingState(val value: Boolean) : UIIntent()
-    data class ChangeTimeMaxState(val value: Boolean) : UIIntent()
-}
+
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -51,13 +46,11 @@ class HomeViewModel @Inject constructor(
 
     init {
         initTime()
-        viewModelScope.launch {
-            initImmersionState()
-        }
+        initImmersionState()
     }
 
-    private suspend fun initImmersionState() {
-        withContext(Dispatchers.IO) {
+    private fun initImmersionState() {
+        launchIO {
             val show = dataStore.data.map {
                 it[DataStoreCont.IMMERSION_STATE] ?: false
             }.first()
@@ -73,7 +66,7 @@ class HomeViewModel @Inject constructor(
         when (uiIntent) {
             is UIIntent.ChangeImmersionState -> {
                 _uiState.value = _uiState.value.copy(immersionShow = uiIntent.value)
-                viewModelScope.launch(Dispatchers.IO) {
+                launchIO {
                     dataStore.edit {
                         it[DataStoreCont.IMMERSION_STATE] = uiIntent.value
                     }
@@ -81,7 +74,6 @@ class HomeViewModel @Inject constructor(
             }
 
             is UIIntent.ChangeLoadingState -> _uiState.value = _uiState.value.copy(loadingShow = uiIntent.value)
-            is UIIntent.ChangeTimeMaxState -> _uiState.value = _uiState.value.copy(timeMax = uiIntent.value)
         }
     }
 
@@ -125,5 +117,9 @@ class HomeViewModel @Inject constructor(
             emit(Unit)
             delay(period)
         }
+    }
+
+    private fun launchIO(block: suspend () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) { block() }
     }
 }

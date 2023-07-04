@@ -1,4 +1,4 @@
-package com.setruth.timemanager.ui.screen.mainnav.home
+package com.setruth.timemanager.ui.screen.home
 
 data class DateState(
     val date: String = "",
@@ -15,7 +15,6 @@ data class UIState(
     val timeMode: TimeMode = TimeMode.PM,
     val immersionShow: Boolean = false,
     val loadingShow: Boolean = false,
-    val timeMax: Boolean = true,
 )
 
 enum class TimeMode {

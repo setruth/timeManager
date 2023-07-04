@@ -6,25 +6,29 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.setruth.timemanager.config.Route
-import com.setruth.timemanager.ui.screen.mainnav.MainNavView
+import com.setruth.timemanager.ui.navigation.NavigationPage
 import com.setruth.timemanager.ui.screen.start.StartPageView
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    sealed class Route(val route: String) {
+        object Start : Route("start")
+        object Main : Route("main")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TimeManagerTheme {
-                val appNavController = rememberNavController()
-                NavHost(navController = appNavController, startDestination = Route.START_SCREEN) {
-                    composable(Route.START_SCREEN) {
-                        StartPageView(appNavController = appNavController)
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = Route.Start.route) {
+                    composable(Route.Start.route) {
+                        StartPageView(navController)
                     }
-                    composable(Route.MAIN_NAV) {
-                        MainNavView()
+                    composable(Route.Main.route) {
+                        NavigationPage()
                     }
                 }
             }
