@@ -32,10 +32,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.setruth.timemanager.config.Route
+import com.setruth.timemanager.MainActivity
 import com.setruth.timemanager.ui.theme.TimeManagerTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -44,8 +43,8 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StartPageView(
+    navController: NavController,
     modifier: Modifier = Modifier,
-    appNavController: NavHostController = rememberNavController()
 ) {
     var lineAlpha by remember {
         mutableStateOf(0f)
@@ -70,12 +69,6 @@ fun StartPageView(
         mutableStateOf(false)
     }
 
-    val canvasRotation by animateFloatAsState(
-        targetValue = if (lineAlpha == 1f) 360f else 0f,
-        animationSpec = tween(durationMillis = 1000),
-        label = ""
-    )
-
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             delay(500)
@@ -89,10 +82,7 @@ fun StartPageView(
         }
         contentVisible = true
         delay(1500)
-        appNavController.navigate(
-            Route.MAIN_NAV,
-            NavOptions.Builder().setPopUpTo(Route.START_SCREEN, true).build()
-        )
+        navController.navigate(MainActivity.Route.Main.route)
     }
     Column(
         modifier = modifier
@@ -107,6 +97,11 @@ fun StartPageView(
             visible = iconVisible,
             enter = scaleIn()
         ) {
+            val canvasRotation by animateFloatAsState(
+                targetValue = if (lineAlpha == 1f) 360f else 0f,
+                animationSpec = tween(durationMillis = 1000),
+                label = ""
+            )
             Canvas(
                 modifier = Modifier
                     .size(100.dp)
@@ -151,6 +146,6 @@ fun StartPageView(
 @Composable
 fun StartPagePreview() {
     TimeManagerTheme {
-        StartPageView()
+        StartPageView(rememberNavController())
     }
 }

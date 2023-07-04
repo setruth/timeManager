@@ -1,4 +1,4 @@
-package com.setruth.timemanager.ui.screen.mainnav
+package com.setruth.timemanager.ui.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
@@ -35,26 +34,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.setruth.timemanager.R
-import com.setruth.timemanager.ui.screen.mainnav.countdown.CountDownView
-import com.setruth.timemanager.ui.screen.mainnav.home.HomeView
-import com.setruth.timemanager.ui.screen.mainnav.stopwatch.StopWatchView
+import com.setruth.timemanager.ui.screen.countdown.CountDownView
+import com.setruth.timemanager.ui.screen.home.HomeView
+import com.setruth.timemanager.ui.screen.stopwatch.StopWatchView
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-
-class MainViewModel : ViewModel() {
-    private val _navBottomState = MutableStateFlow(true)
-    val navBottomState: StateFlow<Boolean> = _navBottomState
-
-    fun changeBottomState(state: Boolean) {
-        _navBottomState.value = state
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun MainNavView(modifier: Modifier = Modifier, mainViewModel: MainViewModel = viewModel()) {
-    val navBottomState by mainViewModel.navBottomState.collectAsState()
+fun NavigationPage(modifier: Modifier = Modifier, navigationViewModel: NavigationViewModel = viewModel()) {
+    val navBottomState by navigationViewModel.navBottomState.collectAsState()
 
     val navController = rememberNavController()
 
@@ -95,7 +83,7 @@ fun MainNavView(modifier: Modifier = Modifier, mainViewModel: MainViewModel = vi
     ) {
         Box(modifier = Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = Screen.Home.route) {
-                composable(Screen.Home.route) { HomeView(mainViewModel) }
+                composable(Screen.Home.route) { HomeView(navigationViewModel) }
                 composable(Screen.CountDown.route) { CountDownView() }
                 composable(Screen.StopWatch.route) { StopWatchView() }
             }

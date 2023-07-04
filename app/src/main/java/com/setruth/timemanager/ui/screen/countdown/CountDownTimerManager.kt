@@ -1,4 +1,4 @@
-package com.setruth.timemanager.ui.screen.mainnav.countdown
+package com.setruth.timemanager.ui.screen.countdown
 
 import android.os.Handler
 import android.os.Looper
@@ -77,6 +77,7 @@ object CountDownTimerManager {
             if (topTask == null || newTask.mExecuteTimeInNext < topTask.mExecuteTimeInNext) {
                 cancel()
             }
+            taskAtomicReference.set(newTask)
             mTaskQueue.offer(newTask)
             mIsCancelled = false
             mHandler.sendMessage(mHandler.obtainMessage(MSG))

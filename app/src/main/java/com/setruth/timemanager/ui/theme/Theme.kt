@@ -15,17 +15,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = DarkColors.primary,
     onPrimary = DarkColors.onPrimary,
     background = DarkColors.background,
-    primaryContainer =  DarkColors.primaryContainer,
-    onPrimaryContainer =  DarkColors.onPrimaryContainer,
+    primaryContainer = DarkColors.primaryContainer,
+    onPrimaryContainer = DarkColors.onPrimaryContainer,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = LightColors.primary,
     onPrimary = LightColors.onPrimary,
     background = LightColors.background,
-    primaryContainer =  LightColors.primaryContainer,
-    onPrimaryContainer =  LightColors.onPrimaryContainer,
-
+    primaryContainer = LightColors.primaryContainer,
+    onPrimaryContainer = LightColors.onPrimaryContainer,
 )
 
 @Composable
