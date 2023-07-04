@@ -29,7 +29,7 @@ detekt {
     allRules = false
 
     // Specifying a baseline file. All findings stored in this file in subsequent runs of detekt.
-    // 指定基准测试文件。
+    // 指定基线文件。
     // 所有结果都存储在此文件中，用于后续运行 detekt
     baseline = file("detekt/baseline.xml")
 
@@ -63,6 +63,7 @@ detekt {
 
     dependencies {
         // gradle detektGenerateConfig
+        // gradle detektBaseline
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.0")
         detektPlugins("ru.kode:detekt-rules-compose:1.2.2")
         detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
